@@ -4,8 +4,8 @@ This AddOn allows you to import markdown (.md) files from GitHub repositories in
 
 # Requirements
 
-- [REDAXO] 5.14 or higher (https://github.com/redaxo/redaxo)
-- [feeds AddOn] (>=4.0.0-dev) installed and activated (https://github.com/FriendsOfREDAXO/feeds)
+- [REDAXO](https://github.com/redaxo/redaxo) 5.14 or higher
+- [feeds AddOn](https://github.com/FriendsOfREDAXO/feeds) (>=4.0.0-dev) installed and activated
 - php Version 8.1 or higher
 
 
