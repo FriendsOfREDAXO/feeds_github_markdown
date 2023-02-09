@@ -1,4 +1,4 @@
-## feeds github markdown loader
+## 🐣feeds github markdown loader
 
 This AddOn allows you to import markdown (.md) files from GitHub repositories into your REDAXO installation. 
 
