@@ -1,10 +1,10 @@
 <?php
-class rex_feeds_stream_github_repo extends rex_feeds_stream_abstract
+class rex_feeds_stream_github_markdown extends rex_feeds_stream_abstract
 {
     public function getTypeName()
     {
         # Name des Streams
-        return rex_i18n::msg('feeds_github_repo');
+        return rex_i18n::msg('feeds_github_md');
     }
     public function getTypeParams()
     {
@@ -32,6 +32,9 @@ class rex_feeds_stream_github_repo extends rex_feeds_stream_abstract
     {
         # Hier wird die API abgefragt und die Daten in die Datenbank geschrieben
         # Falls ein Unterordner angegeben wurde, wird dieser in die URL eingebaut
+
+        $url = "";
+
         if ($this->typeParams['subrepo_name'] == "") {
             $url = "https://api.github.com/repos/" . $this->typeParams['repo_name'] . "/" . "contents?ref=" . $this->typeParams['branch'];
         } else {
@@ -50,9 +53,6 @@ class rex_feeds_stream_github_repo extends rex_feeds_stream_abstract
         $context = stream_context_create($options);
         $contents = file_get_contents($url, false, $context);
         $contents = json_decode($contents, true);
-
-        # mit $dump werden die Daten in der Konsole ausgegeben
-        dump($contents);
 
         # Nur Dateien mit der Endung .md werden importiert
         foreach ($contents as $content) {
