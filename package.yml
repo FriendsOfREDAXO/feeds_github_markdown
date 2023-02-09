@@ -1,4 +1,4 @@
-package: github_repo
+package: feeds_github_markdown
 version: '1.0.0'
 author: Ali Kemal Tuncel
 
