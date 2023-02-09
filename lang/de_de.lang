@@ -1,5 +1,5 @@
 feeds_github = GitHub
-feeds_github_repo = GitHub
+feeds_github_md = GitHub
 feeds_github_repo_name = GitHub Repo-Name
 feeds_github_subrepo_name = GitHub Unterordner (bei Bedarf)
 feeds_github_branch = GitHub Branch
