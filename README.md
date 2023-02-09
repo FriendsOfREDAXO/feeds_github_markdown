@@ -11,13 +11,13 @@ This AddOn allows you to import markdown (.md) files from GitHub repositories in
 
 # Installation
 
-1. Download the GitHub-Feeds AddOn from the REDAXO AddOn repository or from the releases section of this repository.
-2. Install the AddOn in your REDAXO backend using the extension manager.
+1. Download the GitHub-Feeds AddOn via installer from the REDAXO AddOn repository or from the releases section of this repository.
+2. Install the AddOn in your REDAXO backend using the AddOn manager.
 
 
 # Usage
 
-1. Create a stream in the feeds AddOn and choose the GitHub as the source type.
+1. Create a stream in the feeds AddOn and choose GitHub as the source type.
 2. Configure the AddOn to your needs, e.g. set the repository name and branch.
 
 
