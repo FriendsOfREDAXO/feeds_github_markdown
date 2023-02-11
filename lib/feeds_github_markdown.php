@@ -11,13 +11,13 @@ class rex_feeds_stream_github_markdown extends rex_feeds_stream_abstract
         # Eingabefelder für die Konfiguration des Streams
         return [
             [
-                'label' => rex_i18n::msg('feeds_github_repo_name'),
-                'name' => 'repo_name',
+                'label' => rex_i18n::msg('feeds_github_user_name'),
+                'name' => 'user_name',
                 'type' => 'string',
             ],
             [
-                'label' => rex_i18n::msg('feeds_github_subrepo_name'),
-                'name' => 'subrepo_name',
+                'label' => rex_i18n::msg('feeds_github_repo_name'),
+                'name' => 'repo_name',
                 'type' => 'string',
             ],
             [
@@ -31,42 +31,59 @@ class rex_feeds_stream_github_markdown extends rex_feeds_stream_abstract
     public function fetch()
     {
         # Hier wird die API abgefragt und die Daten in die Datenbank geschrieben
-        # Falls ein Unterordner angegeben wurde, wird dieser in die URL eingebaut
-
+        # Falls ein Unterordner angegeben wurde, wird dieser in die URL eingebaut, sonst wird der Root-Ordner abgefragt
         $url = "";
 
-        if ($this->typeParams['subrepo_name'] == "") {
-            $url = "https://api.github.com/repos/" . $this->typeParams['repo_name'] . "/" . "contents?ref=" . $this->typeParams['branch'];
+        if ($this->typeParams['repo_name'] == "") {
+            $url = "https://api.github.com/repos/" . $this->typeParams['user_name'] . "/" . "contents?ref=" . $this->typeParams['branch'];
         } else {
-            $url = "https://api.github.com/repos/" . $this->typeParams['repo_name'] . "/" . $this->typeParams['subrepo_name'] . "/" . "contents?ref=" . $this->typeParams['branch'];
+            $url = "https://api.github.com/repos/" . $this->typeParams['user_name'] . "/" . $this->typeParams['repo_name'] . "/" . "contents?ref=" . $this->typeParams['branch'];
         }
 
-        # Die Daten werden als JSON-Array zurückgegeben
+        # Prüfen ob die URL erreichbar ist
         $options = array(
             'http' => array(
-                'method' => 'GET',
+                'method' => 'HEAD',
                 'header' => array(
                     "User-Agent: PHP\r\n"
                 )
             )
         );
         $context = stream_context_create($options);
-        $contents = file_get_contents($url, false, $context);
-        $contents = json_decode($contents, true);
-
-        # Nur Dateien mit der Endung .md werden importiert
-        foreach ($contents as $content) {
-            if (substr($content['name'], -3) == ".md") {
-                $item = new rex_feeds_item($this->streamId, $content['sha']);
-                $item->setContentRaw(file_get_contents($content['download_url']));
-                $item->setContent(strip_tags(file_get_contents($content['download_url'])));
-                $item->setUrl($content['html_url']);
-                $item->setDate(new DateTime());
-                $item->setRaw($content);
-                $this->updateCount($item);
-                $item->save();
+        $head = @get_headers($url, 1, $context);
+        # Wenn die URL nicht erreichbar ist, wird die Funktion abgebrochen
+        if (strpos($head[0], 'HTTP/1.1 404 Not Found') !== false || strpos($head[0], 'HTTP/1.1 403 Forbidden') !== false) {
+            return;
+        } else if (strpos($head[0], 'HTTP/1.1 200 OK') !== false) {
+            # Wenn die URL erreichbar ist, werden die Daten abgefragt
+            $options = array(
+                'http' => array(
+                    'method' => 'GET',
+                    'header' => array(
+                        "User-Agent: PHP\r\n"
+                    )
+                )
+            );
+            $context = stream_context_create($options);
+            $contents = file_get_contents($url, false, $context);
+            $contents = json_decode($contents, true);
+            # Wenn die Daten erfolgreich abgefragt wurden, werden sie in die Datenbank geschrieben
+            if (is_array($contents) && !empty($contents)) {
+                # Nur Dateien mit der Endung .md werden importiert
+                foreach ($contents as $content) {
+                    if (substr($content['name'], -3) == ".md") {
+                        $item = new rex_feeds_item($this->streamId, $content['sha']);
+                        $item->setContentRaw(file_get_contents($content['download_url']));
+                        $item->setContent(strip_tags(file_get_contents($content['download_url'])));
+                        $item->setUrl($content['html_url']);
+                        $item->setDate(new DateTime());
+                        $item->setRaw($content);
+                        $this->updateCount($item);
+                        $item->save();
+                    }
+                }
+                self::registerExtensionPoint($this->streamId);
             }
         }
-        self::registerExtensionPoint($this->streamId);
     }
 }
