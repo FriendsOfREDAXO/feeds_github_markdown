@@ -1,5 +1,5 @@
 feeds_github = GitHub
 feeds_github_md = GitHub
-feeds_github_repo_name = GitHub User-Name
-feeds_github_subrepo_name = GitHub Repo-Name
+feeds_github_user_name = GitHub User-Name
+feeds_github_repo_name = GitHub Repo-Name
 feeds_github_branch = GitHub Branch
