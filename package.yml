@@ -1,6 +1,6 @@
 package: feeds_github_markdown
 version: '1.0.0'
-author: Ali Kemal Tuncel
+author: Friends Of REDAXO
 
 page:
   hidden: true
